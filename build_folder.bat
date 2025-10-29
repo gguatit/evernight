@@ -2,10 +2,10 @@
 REM Windows에서 폴더 형태로 빌드 (더 작은 크기)
 
 echo Installing dependencies...
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 echo Building executable (folder mode)...
-pyinstaller --onedir --windowed --add-data "assets;assets" --icon=assets/character.png --name="DesktopPet" main.py
+python -m PyInstaller --onedir --windowed --add-data "assets;assets" --name="DesktopPet" main.py
 
 echo.
 echo Build complete! 
