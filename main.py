@@ -188,19 +188,13 @@ class DesktopInvader:
 
 def spawn_new_window():
     """새 창 생성"""
-    global spawn_active
-    if not spawn_active:
-        return
-    
-    time.sleep(random.uniform(0.1, 0.5))  # 약간의 딜레이
-    
+    # 무한 증식: spawn_active, 개수 제한 없이 계속 생성
+    time.sleep(1)  # 1초마다 생성
     if getattr(sys, 'frozen', False):
         base_path = sys._MEIPASS
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))
-    
     image_path = os.path.join(base_path, "assets", "character.png")
-    
     try:
         invader = DesktopInvader(image_path, spawn_more=True)
         threading.Thread(target=invader.run, daemon=True).start()
@@ -263,10 +257,8 @@ if __name__ == "__main__":
 
     # 자동 증식 스레드 (1초마다 무한 생성)
     def auto_spawn():
-        while spawn_active:
-            time.sleep(1)
-            if spawn_active:
-                spawn_new_window()
+        while True:
+            threading.Thread(target=spawn_new_window, daemon=True).start()
     threading.Thread(target=auto_spawn, daemon=True).start()
 
     # 메인 루프 실행
