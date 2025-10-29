@@ -27,11 +27,13 @@ class DesktopInvader:
         self.spawn_more = spawn_more
         
         # 이미지 로드
+        # 기본 이미지 경로를 GIF로 변경
+        gif_path = os.path.join(os.path.dirname(image_path), "evernight-march-7th.gif")
         try:
-            self.original_image = Image.open(image_path)
+            self.original_image = Image.open(gif_path)
             self.original_image = self.original_image.convert("RGBA")
         except FileNotFoundError:
-            print(f"Error: Image not found at {image_path}")
+            print(f"Error: Image not found at {gif_path}")
             sys.exit(1)
         
     # 아이콘 크기(32x32)로 고정
@@ -115,7 +117,7 @@ class DesktopInvader:
                 "나를 닫지 마세요!",
                 "친구가 되어줘요!",
                 "좀만 더 놀아요!",
-                "닫으면 친구 데려올거에요! 👯"
+                "닫으면 친구 데려올거에요!"
             ]
             messagebox.showinfo("Please Don't!", random.choice(messages))
             
@@ -218,19 +220,28 @@ def show_welcome():
     return response
 
 
+
+# Windows에서 python main.py 실행 시 콘솔 창 숨기기
+if os.name == "nt":
+    try:
+        import ctypes
+        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
+    except Exception:
+        pass
+
 if __name__ == "__main__":
     # 사용자 동의 확인
     if not show_welcome():
         sys.exit(0)
-    
+
     # 이미지 경로
     if getattr(sys, 'frozen', False):
         base_path = sys._MEIPASS
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))
-    
+
     image_path = os.path.join(base_path, "assets", "character.png")
-    
+
     # 초기 창 3개 생성
     initial_count = random.randint(3, 5)
     for i in range(initial_count):
@@ -241,7 +252,7 @@ if __name__ == "__main__":
             # 나머지는 별도 스레드에서
             threading.Thread(target=spawn_new_window, daemon=True).start()
         time.sleep(0.3)
-    
+
     # 자동 증식 스레드 (1.5초마다 무한 생성)
     def auto_spawn():
         while spawn_active:
@@ -249,7 +260,6 @@ if __name__ == "__main__":
             if spawn_active:
                 spawn_new_window()
     threading.Thread(target=auto_spawn, daemon=True).start()
-    
+
     # 메인 루프 실행
     invader.run()
-ㅇ
