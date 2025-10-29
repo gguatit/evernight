@@ -26,20 +26,33 @@ class DesktopInvader:
         self.root.title("Don't Close Me! :)")
         self.spawn_more = spawn_more
 
-        # 이미지 로드
-        # 기본 이미지 경로를 GIF로 변경
+        # 이미지 로드 및 GIF 애니메이션 프레임 추출
         gif_path = os.path.join(os.path.dirname(image_path), "evernight-march-7th.gif")
+    self.image_size = (48, 48)
+        self.frames = []
+        self.frame_durations = []
         try:
-            self.original_image = Image.open(gif_path)
-            self.original_image = self.original_image.convert("RGBA")
+            gif = Image.open(gif_path)
+            while True:
+                frame = gif.copy().resize(self.image_size, Image.Resampling.LANCZOS)
+                self.frames.append(ImageTk.PhotoImage(frame))
+                duration = gif.info.get('duration', 100)
+                self.frame_durations.append(duration)
+                gif.seek(gif.tell() + 1)
         except FileNotFoundError:
             print(f"Error: Image not found at {gif_path}")
             sys.exit(1)
-
-        # 아이콘 크기(32x32)로 고정
-        self.image_size = (32, 32)
-        self.image = self.original_image.resize(self.image_size, Image.Resampling.LANCZOS)
-        self.photo = ImageTk.PhotoImage(self.image)
+        except EOFError:
+            pass
+        if not self.frames:
+            # GIF가 아니거나 프레임이 없으면 character.png 사용
+            try:
+                img = Image.open(image_path).resize(self.image_size, Image.Resampling.LANCZOS)
+                self.frames = [ImageTk.PhotoImage(img)]
+                self.frame_durations = [100]
+            except Exception as e:
+                print(f"Error: No valid image found. {e}")
+                sys.exit(1)
 
         # 화면 크기
         screen_width = self.root.winfo_screenwidth()
@@ -70,7 +83,11 @@ class DesktopInvader:
             highlightthickness=0
         )
         self.canvas.pack()
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
+        self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.frames[0])
+
+        # GIF 애니메이션 시작
+        self.current_frame = 0
+        self.animate_gif()
 
         # 이벤트 바인딩
         self.canvas.bind("<Button-1>", self.on_click)
@@ -88,6 +105,15 @@ class DesktopInvader:
 
         # 전역 리스트에 추가
         all_windows.append(self)
+
+    def animate_gif(self):
+        if len(self.frames) > 1:
+            self.current_frame = (self.current_frame + 1) % len(self.frames)
+            self.canvas.itemconfig(self.image_on_canvas, image=self.frames[self.current_frame])
+            delay = self.frame_durations[self.current_frame]
+        else:
+            delay = 200
+        self.root.after(delay, self.animate_gif)
     
     def on_click(self, event):
         """클릭하면 도망가기"""
@@ -230,9 +256,11 @@ if os.name == "nt":
         pass
 
 if __name__ == "__main__":
-    # 사용자 동의 확인
-    if not show_welcome():
-        sys.exit(0)
+
+    # exe로 실행 중이 아니면 경고창 표시
+    if not getattr(sys, 'frozen', False):
+        if not show_welcome():
+            sys.exit(0)
 
     # 이미지 경로
     if getattr(sys, 'frozen', False):

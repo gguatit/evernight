@@ -1,6 +1,6 @@
-
 @echo off
-REM Windows에서 EXE 파일 빌드 스크립트
+setlocal
+REM Windows에서 EXE 파일 빌드 스크립트 (GIF->ICO 변환 포함)
 
 where python >nul 2>nul
 if errorlevel 1 (
@@ -21,8 +21,24 @@ if not exist "assets" (
     echo You can add it later and rebuild.
 )
 
+REM evernight-march-7th.gif -> evernight-march-7th.ico 변환 (ImageMagick 필요)
+if exist evernight-march-7th.gif (
+    if not exist evernight-march-7th.ico (
+        echo GIF를 ICO로 변환 중...
+        convert evernight-march-7th.gif -resize 48x48 evernight-march-7th.ico
+        if exist evernight-march-7th.ico (
+            echo evernight-march-7th.ico 생성 완료.
+        ) else (
+            echo evernight-march-7th.ico 변환 실패. (ImageMagick 설치 및 PATH 확인)
+        )
+    )
+)
+
+REM 빌드
 echo Building executable...
-python -m PyInstaller --onefile --windowed --add-data "assets;assets" --name="DesktopPet" main.py
+set "ICON="
+if exist evernight-march-7th.ico set "ICON=--icon=evernight-march-7th.ico"
+python -m PyInstaller --onefile --windowed --add-data "assets;assets" --name="DesktopPet" %ICON% main.py
 
 echo.
 echo Build complete!
@@ -30,4 +46,5 @@ echo The executable is in the 'dist' folder.
 echo.
 echo IMPORTANT: Make sure assets\character.png exists before running!
 echo Run dist\DesktopPet.exe to start the desktop pet.
+endlocal
 pause
