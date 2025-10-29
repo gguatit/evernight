@@ -25,7 +25,7 @@ class DesktopInvader:
         self.root = tk.Tk()
         self.root.title("Don't Close Me! :)")
         self.spawn_more = spawn_more
-        
+
         # 이미지 로드
         # 기본 이미지 경로를 GIF로 변경
         gif_path = os.path.join(os.path.dirname(image_path), "evernight-march-7th.gif")
@@ -35,32 +35,32 @@ class DesktopInvader:
         except FileNotFoundError:
             print(f"Error: Image not found at {gif_path}")
             sys.exit(1)
-        
-    # 아이콘 크기(32x32)로 고정
-    self.image_size = (32, 32)
-    self.image = self.original_image.resize(self.image_size, Image.Resampling.LANCZOS)
-    self.photo = ImageTk.PhotoImage(self.image)
-        
+
+        # 아이콘 크기(32x32)로 고정
+        self.image_size = (32, 32)
+        self.image = self.original_image.resize(self.image_size, Image.Resampling.LANCZOS)
+        self.photo = ImageTk.PhotoImage(self.image)
+
         # 화면 크기
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
-        
+
         # 랜덤 위치
         x = random.randint(0, max(0, screen_width - self.image_size[0]))
         y = random.randint(0, max(0, screen_height - self.image_size[1]))
-        
+
         # 윈도우 설정
         self.root.geometry(f"{self.image_size[0]}x{self.image_size[1]}+{x}+{y}")
         self.root.overrideredirect(True)
         self.root.attributes('-topmost', True)
-        
+
         # 투명도
         try:
             self.root.attributes('-transparentcolor', 'white')
             self.root.config(bg='white')
         except:
             pass
-        
+
         # 캔버스
         self.canvas = Canvas(
             self.root,
@@ -71,21 +71,21 @@ class DesktopInvader:
         )
         self.canvas.pack()
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
-        
+
         # 이벤트 바인딩
         self.canvas.bind("<Button-1>", self.on_click)
         self.canvas.bind("<Button-3>", self.on_right_click)
         self.canvas.bind("<Double-Button-1>", self.on_double_click)
         self.root.bind("<Key>", self.on_key_press)
-        
+
         # 닫기 시도 감지
         self.root.protocol("WM_DELETE_WINDOW", self.on_close_attempt)
-        
+
         # 랜덤 움직임 시작
         self.moving = random.choice([True, False])
         if self.moving:
             self.start_random_movement()
-        
+
         # 전역 리스트에 추가
         all_windows.append(self)
     
