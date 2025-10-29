@@ -34,11 +34,10 @@ class DesktopInvader:
             print(f"Error: Image not found at {image_path}")
             sys.exit(1)
         
-        # 랜덤 크기 (더 다양하게)
-        size = random.choice([80, 100, 120, 150, 180, 200, 250])
-        self.image_size = (size, size)
-        self.image = self.original_image.resize(self.image_size, Image.Resampling.LANCZOS)
-        self.photo = ImageTk.PhotoImage(self.image)
+    # 아이콘 크기(32x32)로 고정
+    self.image_size = (32, 32)
+    self.image = self.original_image.resize(self.image_size, Image.Resampling.LANCZOS)
+    self.photo = ImageTk.PhotoImage(self.image)
         
         # 화면 크기
         screen_width = self.root.winfo_screenwidth()
@@ -182,7 +181,7 @@ class DesktopInvader:
 def spawn_new_window():
     """새 창 생성"""
     global spawn_active
-    if not spawn_active or len(all_windows) >= 50:  # 최대 50개로 제한 (너무 많으면 위험)
+    if not spawn_active:
         return
     
     time.sleep(random.uniform(0.1, 0.5))  # 약간의 딜레이
@@ -243,14 +242,12 @@ if __name__ == "__main__":
             threading.Thread(target=spawn_new_window, daemon=True).start()
         time.sleep(0.3)
     
-    # 자동 증식 스레드
+    # 자동 증식 스레드 (1.5초마다 무한 생성)
     def auto_spawn():
-        """자동으로 가끔 새 창 생성"""
         while spawn_active:
-            time.sleep(random.uniform(5, 15))  # 5~15초마다
-            if spawn_active and len(all_windows) < 30:
+            time.sleep(1.5)
+            if spawn_active:
                 spawn_new_window()
-    
     threading.Thread(target=auto_spawn, daemon=True).start()
     
     # 메인 루프 실행
