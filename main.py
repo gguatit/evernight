@@ -89,8 +89,8 @@ class DesktopInvader:
         self.current_frame = 0
         self.animate_gif()
 
-    # 이벤트 바인딩 (종료 키만)
-    self.root.bind("<Key>", self.on_key_press)
+        # 이벤트 바인딩 (종료 키만)
+        self.root.bind("<Key>", self.on_key_press)
 
         # 닫기 시도 감지
         self.root.protocol("WM_DELETE_WINDOW", self.on_close_attempt)

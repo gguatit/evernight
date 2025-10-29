@@ -26,7 +26,7 @@ REM Convert evernight-march-7th.gif to evernight-march-7th.ico (ImageMagick requ
 if exist evernight-march-7th.gif (
     if not exist evernight-march-7th.ico (
         echo Converting GIF to ICO...
-        convert evernight-march-7th.gif -resize 48x48 evernight-march-7th.ico
+        magick evernight-march-7th.gif -resize 48x48 evernight-march-7th.ico
         if exist evernight-march-7th.ico (
             echo evernight-march-7th.ico created.
         ) else (
