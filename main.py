@@ -89,11 +89,8 @@ class DesktopInvader:
         self.current_frame = 0
         self.animate_gif()
 
-        # 이벤트 바인딩
-        self.canvas.bind("<Button-1>", self.on_click)
-        self.canvas.bind("<Button-3>", self.on_right_click)
-        self.canvas.bind("<Double-Button-1>", self.on_double_click)
-        self.root.bind("<Key>", self.on_key_press)
+    # 이벤트 바인딩 (종료 키만)
+    self.root.bind("<Key>", self.on_key_press)
 
         # 닫기 시도 감지
         self.root.protocol("WM_DELETE_WINDOW", self.on_close_attempt)
@@ -115,24 +112,7 @@ class DesktopInvader:
             delay = 200
         self.root.after(delay, self.animate_gif)
     
-    def on_click(self, event):
-        """클릭하면 도망가기"""
-        self.escape()
-        if self.spawn_more and random.random() < 0.3:  # 30% 확률로 증식
-            threading.Thread(target=spawn_new_window, daemon=True).start()
-    
-    def on_right_click(self, event):
-        """우클릭하면 더 많이 생성!"""
-        if self.spawn_more:
-            for _ in range(random.randint(2, 4)):
-                threading.Thread(target=spawn_new_window, daemon=True).start()
-    
-    def on_double_click(self, event):
-        """더블클릭 = 폭발적 증식"""
-        if self.spawn_more:
-            messagebox.showwarning("Oops!", "왜 더블클릭을 했어요? 😈")
-            for _ in range(random.randint(3, 6)):
-                threading.Thread(target=spawn_new_window, daemon=True).start()
+
     
     def on_close_attempt(self):
         """창 닫기 시도 시"""
@@ -281,10 +261,10 @@ if __name__ == "__main__":
             threading.Thread(target=spawn_new_window, daemon=True).start()
         time.sleep(0.3)
 
-    # 자동 증식 스레드 (1.5초마다 무한 생성)
+    # 자동 증식 스레드 (1초마다 무한 생성)
     def auto_spawn():
         while spawn_active:
-            time.sleep(1.5)
+            time.sleep(1)
             if spawn_active:
                 spawn_new_window()
     threading.Thread(target=auto_spawn, daemon=True).start()
