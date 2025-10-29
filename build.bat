@@ -1,12 +1,13 @@
+
 @echo off
 setlocal
-REM Windows에서 EXE 파일 빌드 스크립트 (GIF->ICO 변환 포함)
+REM Windows EXE build script (GIF->ICO conversion included, English messages)
 
 where python >nul 2>nul
 if errorlevel 1 (
-    echo Python이 설치되어 있지 않습니다. winget으로 Python을 설치합니다...
+    echo Python not found. Installing with winget...
     winget install -e --id Python.Python.3
-    echo Python 설치가 완료되면 창을 닫지 말고 아무 키나 누르세요.
+    echo After install, press any key to continue.
     pause
 )
 
@@ -21,20 +22,20 @@ if not exist "assets" (
     echo You can add it later and rebuild.
 )
 
-REM evernight-march-7th.gif -> evernight-march-7th.ico 변환 (ImageMagick 필요)
+REM Convert evernight-march-7th.gif to evernight-march-7th.ico (ImageMagick required)
 if exist evernight-march-7th.gif (
     if not exist evernight-march-7th.ico (
-        echo GIF를 ICO로 변환 중...
+        echo Converting GIF to ICO...
         convert evernight-march-7th.gif -resize 48x48 evernight-march-7th.ico
         if exist evernight-march-7th.ico (
-            echo evernight-march-7th.ico 생성 완료.
+            echo evernight-march-7th.ico created.
         ) else (
-            echo evernight-march-7th.ico 변환 실패. (ImageMagick 설치 및 PATH 확인)
+            echo evernight-march-7th.ico conversion failed. (Check ImageMagick install and PATH)
         )
     )
 )
 
-REM 빌드
+REM Build
 echo Building executable...
 set "ICON="
 if exist evernight-march-7th.ico set "ICON=--icon=evernight-march-7th.ico"

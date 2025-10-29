@@ -28,7 +28,7 @@ class DesktopInvader:
 
         # 이미지 로드 및 GIF 애니메이션 프레임 추출
         gif_path = os.path.join(os.path.dirname(image_path), "evernight-march-7th.gif")
-    self.image_size = (48, 48)
+        self.image_size = (48, 48)
         self.frames = []
         self.frame_durations = []
         try:
@@ -45,7 +45,7 @@ class DesktopInvader:
         except EOFError:
             pass
         if not self.frames:
-            # GIF가 아니거나 프레임이 없으면 character.png 사용
+            # If not a GIF or no frames, use character.png
             try:
                 img = Image.open(image_path).resize(self.image_size, Image.Resampling.LANCZOS)
                 self.frames = [ImageTk.PhotoImage(img)]
